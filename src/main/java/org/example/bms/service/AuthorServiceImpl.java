@@ -1,5 +1,6 @@
 package org.example.bms.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.example.bms.controller.AuthorController;
@@ -11,6 +12,7 @@ import org.example.bms.converter.AuthorConverter;
 import org.example.bms.dao.Author;
 import org.example.bms.dao.AuthorRepository;
 import org.example.bms.dto.AuthorDTO;
+import org.springframework.util.StringUtils;
 
 
 @Service
@@ -34,5 +36,24 @@ public class AuthorServiceImpl implements AuthorService {
         }
         Author author = authorRepository.save(AuthorConverter.convertToAuthor(authorDTO));
         return author.getId();
+    }
+
+    @Override
+    public List<AuthorDTO> getAllAuthors(String name, String email, String add_time_range) {
+        String[] add_time_range_list = StringUtils.split(add_time_range, ",");
+        String start_add_time = null;
+        String end_add_time = null;
+        if (add_time_range_list != null) {
+            start_add_time = add_time_range_list[0];
+            end_add_time = add_time_range_list[1];
+        }
+        System.out.println("start_add_time: %s, end_add_time:%s".formatted(start_add_time, end_add_time));
+        List<Author> authorList = authorRepository.findAll();
+        List<AuthorDTO> authorDTOList = new ArrayList<>();
+        for (Author author : authorList) {
+            AuthorDTO authorDTO = AuthorConverter.convertToAuthorDTO(author);
+            authorDTOList.add(authorDTO);
+        }
+        return authorDTOList;
     }
 }

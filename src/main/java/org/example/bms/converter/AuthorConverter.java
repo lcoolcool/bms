@@ -20,10 +20,9 @@ public class AuthorConverter {
 
     public static Author convertToAuthor(AuthorDTO authorDTO) {
         Author author = new Author();
-        author.setId(author.getId());
-        author.setName(author.getName());
-        author.setEmail(author.getEmail());
-        author.setDescription(author.getDescription());
+        author.setName(authorDTO.getName());
+        author.setEmail(authorDTO.getEmail());
+        author.setDescription(authorDTO.getDescription());
         author.setAdd_time(LocalDateTime.now());
         return author;
     }

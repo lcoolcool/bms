@@ -23,19 +23,19 @@ public class Response <T> {
         this.message = message;
     }
 
-    public static <K> Response<K> success(){
+    public static <V> Response<V> success(){
         return new Response<>(200, "success");
     }
 
-    public static <K> Response<K> success(K data){
+    public static <V> Response<V> success(V data){
         return new Response<>(data, 20000, "success");
     }
 
-    public static <K> Response<K> fail(){
+    public static <V> Response<V> fail(){
         return new Response<>(50000, "fail");
     }
 
-    public static <K> Response<K> fail(String message){
+    public static <V> Response<V> fail(String message){
         return new Response<>(50000, message);
     }
 
