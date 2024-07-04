@@ -1,5 +1,6 @@
 package org.example.bms.service;
 
+import org.example.bms.dao.Author;
 import org.example.bms.dto.AuthorDTO;
 import org.springframework.stereotype.Service;
 
@@ -12,4 +13,10 @@ public class AuthorServiceImpl1 implements AuthorService {
         authorDTO.setId(id);
         return authorDTO;
     };
+
+    @Override
+    public Long addNewAuthor(AuthorDTO authorDTO){
+        Author author = new Author();
+        return 2L;
+    }
 }

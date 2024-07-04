@@ -11,6 +11,8 @@ public class AuthorDTO {
 
     private String name;
 
+    private String email;
+
     private String description;
 
     private String add_time;
