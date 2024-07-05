@@ -13,4 +13,6 @@ public interface AuthorService {
     List<AuthorDTO> getAllAuthors(String name, String email, String addTimeRange);
 
     void deleteAuthor(long id);
+
+    AuthorDTO updateAuthor(Long id, AuthorDTO authorDTO);
 }

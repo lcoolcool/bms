@@ -56,4 +56,26 @@ public class AuthorServiceImpl implements AuthorService {
         }
         return authorDTOList;
     }
+
+    @Override
+    public void deleteAuthor(long id) {
+        authorRepository.findById(id).orElseThrow(RuntimeException::new);
+        authorRepository.deleteById(id);
+    }
+
+    @Override
+    public AuthorDTO updateAuthor(Long id, AuthorDTO authorDTO) {
+        Author author = authorRepository.findById(id).orElseThrow(RuntimeException::new);
+        List<Author> authorList = authorRepository.findByEmailAndIdNot(authorDTO.getEmail(), id);
+        if(!CollectionUtils.isEmpty(authorList)){
+            throw new IllegalStateException("email" + authorDTO.getEmail() + " already exist");
+        }
+        author.setEmail(authorDTO.getEmail());
+        author.setName(authorDTO.getName());
+        author.setDescription(authorDTO.getDescription());
+        author.setAdd_time(author.getAdd_time());
+        authorRepository.save(author);
+        return AuthorConverter.convertToAuthorDTO(author);
+    }
+
 }

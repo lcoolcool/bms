@@ -29,4 +29,12 @@ public class AuthorServiceImpl1 implements AuthorService {
     public List<AuthorDTO> getAllAuthors(String name, String email, String add_time_range) {
         return new ArrayList<>();
     }
+
+    @Override
+    public void deleteAuthor(long id) {}
+
+    @Override
+    public AuthorDTO updateAuthor(Long id, AuthorDTO authorDTO) {
+        return new AuthorDTO();
+    }
 }

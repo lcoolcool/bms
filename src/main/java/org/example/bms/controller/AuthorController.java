@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.support.NullValue;
 import org.springframework.web.bind.annotation.*;
 
 import org.example.bms.Response;
@@ -61,8 +62,14 @@ public class AuthorController {
      * @param id
      * @return
      */
-    @DeleteMapping("/author")
-    public Response<String> deleteAuthor(@PathVariable long id){
-        return Response.success(authorService.deleteAuthor(id));
+    @DeleteMapping("/author/{id}")
+    public Response<NullValue> deleteAuthor(@PathVariable long id){
+        authorService.deleteAuthor(id);
+        return Response.success();
+    }
+
+    @PutMapping("/author/{id}")
+    public Response<AuthorDTO> updateAuthor(@PathVariable long id, @RequestBody AuthorDTO authorDTO){
+        return Response.success(authorService.updateAuthor(id, authorDTO));
     }
 }

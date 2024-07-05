@@ -9,4 +9,5 @@ import java.util.List;
 public interface AuthorRepository extends JpaRepository<Author, Long> {
 
     List<Author> findByEmail(String email);
+    List<Author> findByEmailAndIdNot(String email, Long id);
 }
