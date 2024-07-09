@@ -1,14 +1,14 @@
 package org.example.bms.controller;
 
 import java.util.List;
-import java.util.Objects;
 
+import org.example.bms.dto.common.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.support.NullValue;
 import org.springframework.web.bind.annotation.*;
 
-import org.example.bms.Response;
+import org.example.bms.dto.common.Response;
 import org.example.bms.dto.AuthorDTO;
 import org.example.bms.service.AuthorService;
 
@@ -68,8 +68,20 @@ public class AuthorController {
         return Response.success();
     }
 
+    /**
+     * 更新作者
+     * @param id
+     * @param authorDTO
+     * @return
+     */
     @PutMapping("/author/{id}")
     public Response<AuthorDTO> updateAuthor(@PathVariable long id, @RequestBody AuthorDTO authorDTO){
         return Response.success(authorService.updateAuthor(id, authorDTO));
     }
+
+    @GetMapping("/author/page")
+    public Response<List<AuthorDTO>> pageQuery(@ModelAttribute PageRequest<AuthorDTO> request){
+        return Response.success(authorService.getAllAuthors(null, null, null));
+    }
+
 }

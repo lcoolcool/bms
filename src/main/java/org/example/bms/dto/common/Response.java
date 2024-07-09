@@ -1,4 +1,4 @@
-package org.example.bms;
+package org.example.bms.dto.common;
 
 import lombok.Getter;
 import lombok.Setter;
