@@ -1,10 +1,19 @@
 package org.example.bms.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.example.bms.controller.AuthorController;
+import org.example.bms.dao.Book;
+import org.example.bms.dao.BookRepository;
+import org.example.bms.dto.AuthorBookDTO;
+import org.example.bms.dto.common.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -12,7 +21,6 @@ import org.example.bms.converter.AuthorConverter;
 import org.example.bms.dao.Author;
 import org.example.bms.dao.AuthorRepository;
 import org.example.bms.dto.AuthorDTO;
-import org.springframework.util.StringUtils;
 
 
 @Service
@@ -21,6 +29,8 @@ public class AuthorServiceImpl implements AuthorService {
     @Autowired
     private AuthorRepository authorRepository;
 
+    @Autowired
+    private BookRepository BookRepository;
 
     @Override
     public AuthorDTO getAuthorById(long id){
@@ -39,15 +49,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public List<AuthorDTO> getAllAuthors(String name, String email, String add_time_range) {
-        String[] add_time_range_list = StringUtils.split(add_time_range, ",");
-        String start_add_time = null;
-        String end_add_time = null;
-        if (add_time_range_list != null) {
-            start_add_time = add_time_range_list[0];
-            end_add_time = add_time_range_list[1];
-        }
-        System.out.println("start_add_time: %s, end_add_time:%s".formatted(start_add_time, end_add_time));
+    public List<AuthorDTO> getAllAuthors() {
         List<Author> authorList = authorRepository.findAll();
         List<AuthorDTO> authorDTOList = new ArrayList<>();
         for (Author author : authorList) {
@@ -73,9 +75,32 @@ public class AuthorServiceImpl implements AuthorService {
         author.setEmail(authorDTO.getEmail());
         author.setName(authorDTO.getName());
         author.setDescription(authorDTO.getDescription());
-        author.setAdd_time(author.getAdd_time());
-        authorRepository.save(author);
-        return AuthorConverter.convertToAuthorDTO(author);
+        Author updateAuthor = authorRepository.save(author);
+        return AuthorConverter.convertToAuthorDTO(updateAuthor);
+    }
+
+    @Override
+    public PageResult<AuthorDTO> findAllOfPage(int page, int size){
+        Sort sort = Sort.by(Sort.Direction.ASC, "updateTime");
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        Page<Author> authorPage = authorRepository.findAll(pageable);
+        List<AuthorDTO> authorDTOList = authorPage.getContent().stream().map(AuthorConverter::convertToAuthorDTO).toList();
+        return new PageResult<>(authorPage, authorDTOList);
+    }
+
+    @Override
+    public PageResult<AuthorBookDTO> findAllOfPageWithOrder(int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "updateTime");
+        Pageable pageable = PageRequest.of(page -1 , size, sort);
+        Page<Author> authorPage = authorRepository.findAll(pageable);
+        List<AuthorBookDTO> authorBookDTOPage = authorPage.getContent().stream().map(author -> {
+            List<Book> books = BookRepository.listById(author.getId());
+            List< AuthorBookDTO.BookDTO > bookDTOS = books.stream()
+                    .map(book -> new AuthorBookDTO.BookDTO(book.getId(), book.getName(), book.getCode(), book.getDescription(), book.getAddTime()))
+                    .toList();
+            return new AuthorBookDTO(author.getId(), author.getName(), author.getEmail(), author.getDescription(), author.getAddTime(), author.getUpdateTime(), bookDTOS);
+        }).toList();
+        return new PageResult<>(authorPage, authorBookDTOPage);
     }
 
 }

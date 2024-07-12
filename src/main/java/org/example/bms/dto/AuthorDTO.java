@@ -17,5 +17,6 @@ public class AuthorDTO {
 
     private String add_time;
 
-    private String update_time = "adsfasdfasd";
+    private String update_time;
+
 }

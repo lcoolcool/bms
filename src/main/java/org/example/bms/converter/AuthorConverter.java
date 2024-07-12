@@ -3,7 +3,6 @@ package org.example.bms.converter;
 import org.example.bms.dao.Author;
 import org.example.bms.dto.AuthorDTO;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class AuthorConverter {
@@ -14,7 +13,8 @@ public class AuthorConverter {
         authorDTO.setName(author.getName());
         authorDTO.setEmail(author.getEmail());
         authorDTO.setDescription(author.getDescription());
-        authorDTO.setAdd_time(author.getAdd_time().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        authorDTO.setAdd_time(author.getAddTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        authorDTO.setUpdate_time(author.getUpdateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         return authorDTO;
     }
 
@@ -23,7 +23,6 @@ public class AuthorConverter {
         author.setName(authorDTO.getName());
         author.setEmail(authorDTO.getEmail());
         author.setDescription(authorDTO.getDescription());
-        author.setAdd_time(LocalDateTime.now());
         return author;
     }
 }

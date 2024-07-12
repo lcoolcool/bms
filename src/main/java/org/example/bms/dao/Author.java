@@ -1,11 +1,9 @@
 package org.example.bms.dao;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import org.springframework.web.bind.annotation.GetMapping;
-
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,5 +23,23 @@ public class Author {
     private String description;
 
 //    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime add_time;
+    @Column(name = "add_time", updatable = false)
+    private LocalDateTime addTime;
+
+    @Column(name = "update_time")
+    private LocalDateTime updateTime;
+
+    @PrePersist
+    protected   void  onCreate(){
+        this.addTime = LocalDateTime.now();
+        this.updateTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private  void  onUpdate(){
+        this.updateTime = LocalDateTime.now();
+    }
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Book> books;
 }

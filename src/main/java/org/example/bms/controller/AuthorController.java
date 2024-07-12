@@ -2,9 +2,10 @@ package org.example.bms.controller;
 
 import java.util.List;
 
-import org.example.bms.dto.common.PageRequest;
+import lombok.Setter;
+import org.example.bms.dto.AuthorBookDTO;
+import org.example.bms.dto.common.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.support.NullValue;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,6 @@ import org.example.bms.service.AuthorService;
 public class AuthorController {
 
     @Autowired
-    @Qualifier("authorServiceImpl")
     private AuthorService authorService;
 
     /**
@@ -46,15 +46,11 @@ public class AuthorController {
 
     /**
      *  作者列表
-     * @param name
-     * @param email
-     * @param add_time_range
      * @return
      */
     @GetMapping("/author")
-    public Response<List<AuthorDTO>> getAllAuthors(@RequestParam(required = false) String name
-    , @RequestParam(required = false) String email, @RequestParam(required = false) String add_time_range){
-        return Response.success(authorService.getAllAuthors(name, email, add_time_range));
+    public Response<List<AuthorDTO>> getAllAuthors(){
+        return Response.success(authorService.getAllAuthors());
     }
 
     /**
@@ -80,8 +76,15 @@ public class AuthorController {
     }
 
     @GetMapping("/author/page")
-    public Response<List<AuthorDTO>> pageQuery(@ModelAttribute PageRequest<AuthorDTO> request){
-        return Response.success(authorService.getAllAuthors(null, null, null));
+    public PageResponse<AuthorDTO> pageQuery(@RequestParam(defaultValue = "1") int page,
+                                             @RequestParam(defaultValue = "10") int size){
+        return PageResponse.success(authorService.findAllOfPage(page, size));
+    }
+
+    @GetMapping("/author/page/with-books")
+    public PageResponse<AuthorBookDTO> pageQueryWithOrder(@RequestParam(defaultValue = "1") int page,
+                                                          @RequestParam(defaultValue = "10") int size){
+        return PageResponse.success(authorService.findAllOfPageWithOrder(page, size));
     }
 
 }
