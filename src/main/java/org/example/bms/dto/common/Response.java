@@ -1,5 +1,6 @@
 package org.example.bms.dto.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,10 +48,12 @@ public class Response <T> {
         return new Response<>(code, message, data);
     }
 
+    @JsonIgnore
     public boolean isOk(){
         return this.code == 20000;
     }
 
+    @JsonIgnore
     public boolean isFail(){
         return this.code != 20000;
     }

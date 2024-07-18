@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="OFF" monitorInterval="1800" packages="org.apache.logging.log4j.core,com.getsentry.raven.log4j2">
+    <properties>
+        <property name="logs.dir">logs</property>
+        <property name="project.name">bms</property>
+<!--        <property name="env.id">prod</property>-->
+        <property name="final.logs.dir">${logs.dir}/${project.name}</property>
+        <property name="pattern">[%level] [%date{ISO8601}] [%logger:%line] [%thread] [] [%X{requestId}] [%X{serverIp}] %msg%n</property>
+    </properties>
+    <appenders>
+
+        <!-- info日志保留15天 -->
+        <RollingRandomAccessFile name="RollingInfoFile" fileName="${final.logs.dir}/info.log"
+                                 filePattern="${final.logs.dir}/info_%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="500MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="2">
+                <Delete basePath="${final.logs.dir}" maxDepth="1">
+                    <IfFileName glob="info*log"/>
+                    <IfLastModified age="P15D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingRandomAccessFile>
+
+        <!-- error日志保留30天 -->
+        <RollingRandomAccessFile name="RollingErrorFile" fileName="${final.logs.dir}/error.log"
+                                 filePattern="${final.logs.dir}/error_%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1">
+                <Delete basePath="${final.logs.dir}" maxDepth="1">
+                    <IfFileName glob="error*log"/>
+                    <IfLastModified age="P30D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingRandomAccessFile>
+
+        <!-- debug日志保留7天 -->
+        <RollingRandomAccessFile name="RollingDebugFile" fileName="${final.logs.dir}/debug.log"
+                                 filePattern="${final.logs.dir}/debug_%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="500MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1">
+                <Delete basePath="${final.logs.dir}" maxDepth="1">
+                    <IfFileName glob="debug*log"/>
+                    <IfLastModified age="P7D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info"  onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingRandomAccessFile>
+
+        <!-- logstash日志保留4天 -->
+        <RollingRandomAccessFile name="LogstashFile" fileName="${final.logs.dir}/logstash/logstash.log"
+                                 filePattern="${final.logs.dir}/logstash/logstash_%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${pattern}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="100MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="1">
+                <Delete basePath="${final.logs.dir}/logstash" maxDepth="1">
+                    <IfFileName glob="logstash*log"/>
+                    <IfLastModified age="P4D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+        </RollingRandomAccessFile>
+
+    </appenders>
+    <loggers>
+<!--        <Logger name="springfox.documentation" level="WARN"/>-->
+        <Logger name="org.springframework" level="INFO"/>
+<!--        <Logger name="com.google" level="INFO"/>-->
+        <Logger name="org.apache" level="INFO"/>
+<!--        <Logger name="io.undertow" level="INFO"/>-->
+        <Logger name="org.springframework.web" level="INFO"/>
+<!--        <Logger name="org.mybatis.spring" level="INFO"/>-->
+        <Logger name="com.baomidou.dynamic.datasource" level="DEBUG"/>
+        <!-- org.example.bms -->
+        <Logger name="org.example.bms" level="INFO"/>
+
+        <Root level="INFO">
+            <appender-ref ref="RollingErrorFile"/>
+            <appender-ref ref="RollingInfoFile"/>
+            <appender-ref ref="LogstashFile"/>
+            <appender-ref ref="RollingDebugFile"/>
+        </Root>
+    </loggers>
+
+</configuration>

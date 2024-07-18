@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.example.bms.dao.Book;
 import org.example.bms.dao.BookRepository;
 import org.example.bms.dto.AuthorBookDTO;
@@ -49,6 +50,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @DS("slave1")
     public List<AuthorDTO> getAllAuthors() {
         List<Author> authorList = authorRepository.findAll();
         List<AuthorDTO> authorDTOList = new ArrayList<>();
