@@ -1,28 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration status="OFF" monitorInterval="1800" packages="org.apache.logging.log4j.core,com.getsentry.raven.log4j2">
+<!--configuration status="OFF": 这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到log4j2内部各种详细输出-->
+<!--monitorInterval: Log4j能够自动检测修改配置 文件和重新配置本身，设置间隔秒数-->
+<configuration status="OFF" monitorInterval="1800">
+
+    <!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+
+    <!--变量配置-->
     <properties>
+<!--        定义日志存储的路径，不要配置相对路径 -->
+<!--        <property name="logs.dir">/home/logs</property>-->
+<!--        <property name="project.name">demo</property>-->
+<!--        <property name="env.id">local</property>-->
         <property name="logs.dir">logs</property>
-        <property name="project.name">bms</property>
-<!--        <property name="env.id">prod</property>-->
-        <property name="final.logs.dir">${logs.dir}/${project.name}</property>
+        <property name="final.logs.dir">${logs.dir}</property>
+        <!-- 格式化输出：%level表示日志等级，%date表示日期，%thread表示线程名, %msg：日志消息，%n是换行符-->
         <property name="pattern">[%level] [%date{ISO8601}] [%logger:%line] [%thread] [] [%X{requestId}] [%X{serverIp}] %msg%n</property>
     </properties>
     <appenders>
+        <!--控制台输出-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${pattern}"/>
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
 
         <!-- info日志保留15天 -->
         <RollingRandomAccessFile name="RollingInfoFile" fileName="${final.logs.dir}/info.log"
                                  filePattern="${final.logs.dir}/info_%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="${pattern}"/>
             <Policies>
+                <!--指定多久滚动一次，默认是1 hour-->
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!--指定日志文件最大的大小，默认是10MB-->
+                <!--每次大小超过size，则这size大小的日志会自动存入【filePattern=】路径 按 “年-月-日” 建立的文件夹下面并进行压缩，作为存档-->
                 <SizeBasedTriggeringPolicy size="500MB"/>
             </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件开始覆盖-->
             <DefaultRolloverStrategy max="2">
                 <Delete basePath="${final.logs.dir}" maxDepth="1">
                     <IfFileName glob="info*log"/>
                     <IfLastModified age="P15D"/>
                 </Delete>
             </DefaultRolloverStrategy>
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
             <Filters>
                 <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
                 <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
@@ -69,6 +88,16 @@
             </Filters>
         </RollingRandomAccessFile>
 
+        <!--Logstash 是免费且开放的服务器端数据处理管道，能够从多个来源采集数据，转换数据，然后将数据发送到您最喜欢的“存储库”中 -->
+        <!--Logstash 除了输出到文件，也可指定logstash的host和port, host="192.168.76.128" port="5602" protocol="TCP"-->
+<!--        <Socket name="LogstashSocket" host="127.0.0.1" port="4560" protocol="TCP">-->
+<!--            <PatternLayout pattern="${pattern}" />-->
+<!--            <Filters>-->
+<!--                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="NEUTRAL"/>-->
+<!--                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />-->
+<!--            </Filters>-->
+<!--        </Socket>-->
+
         <!-- logstash日志保留4天 -->
         <RollingRandomAccessFile name="LogstashFile" fileName="${final.logs.dir}/logstash/logstash.log"
                                  filePattern="${final.logs.dir}/logstash/logstash_%d{yyyy-MM-dd}-%i.log">
@@ -90,19 +119,19 @@
         </RollingRandomAccessFile>
 
     </appenders>
+    <!--Logger节点用来单独指定日志的形式，比如要为指定包下的class指定不同的日志级别等。-->
+    <!--然后定义loggers，只有定义了logger并引入的appender，appender才会生效-->
     <loggers>
-<!--        <Logger name="springfox.documentation" level="WARN"/>-->
+        <!--监控系统信息-->
+        <!--若是additivity设为false，则 子Logger 只会在自己的appender里输出，而不会在 父Logger 的appender里输出。-->
+        <!--这里的level级别比父Logger(<Root level="INFO">)的级别要高-->
         <Logger name="org.springframework" level="INFO"/>
-<!--        <Logger name="com.google" level="INFO"/>-->
         <Logger name="org.apache" level="INFO"/>
-<!--        <Logger name="io.undertow" level="INFO"/>-->
         <Logger name="org.springframework.web" level="INFO"/>
-<!--        <Logger name="org.mybatis.spring" level="INFO"/>-->
         <Logger name="com.baomidou.dynamic.datasource" level="DEBUG"/>
-        <!-- org.example.bms -->
-        <Logger name="org.example.bms" level="INFO"/>
 
         <Root level="INFO">
+            <appender-ref ref="Console"/>
             <appender-ref ref="RollingErrorFile"/>
             <appender-ref ref="RollingInfoFile"/>
             <appender-ref ref="LogstashFile"/>
