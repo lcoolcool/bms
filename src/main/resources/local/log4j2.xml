@@ -129,6 +129,7 @@
         <Logger name="org.apache" level="INFO"/>
         <Logger name="org.springframework.web" level="INFO"/>
         <Logger name="com.baomidou.dynamic.datasource" level="DEBUG"/>
+        <Logger name="org.example.bms" level="DEBUG"/>
 
         <Root level="INFO">
             <appender-ref ref="Console"/>

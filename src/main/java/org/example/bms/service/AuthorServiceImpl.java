@@ -83,7 +83,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public PageResult<AuthorDTO> findAllOfPage(int page, int size){
-        Sort sort = Sort.by(Sort.Direction.ASC, "updateTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, "updateTime");
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         Page<Author> authorPage = authorRepository.findAll(pageable);
         List<AuthorDTO> authorDTOList = authorPage.getContent().stream().map(AuthorConverter::convertToAuthorDTO).toList();
@@ -92,7 +92,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public PageResult<AuthorBookDTO> findAllOfPageWithOrder(int page, int size) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "updateTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, "updateTime");
         Pageable pageable = PageRequest.of(page -1 , size, sort);
         Page<Author> authorPage = authorRepository.findAll(pageable);
         List<AuthorBookDTO> authorBookDTOPage = authorPage.getContent().stream().map(author -> {
