@@ -73,5 +73,13 @@ spring:
         # IP黑名单（共同存在时，deny优先于allow）
         deny:
 
+springdoc:
+  api-docs:
+    enabled: true  # 开启OpenApi接口
+    path: /api-docs  # 自定义路径，默认为 "/v3/api-docs"
+  swagger-ui:
+    enabled: true  # 开启swagger界面，依赖OpenApi，需要OpenApi同时开启
+    path: /swagger-ui.html  # 自定义路径，默认为 "/swagger-ui.html"
+
 server:
   port: 8080

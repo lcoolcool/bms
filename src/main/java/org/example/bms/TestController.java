@@ -12,5 +12,4 @@ public class TestController {
     public List<String> hello(){
         return List.of("hello", "world");
     }
-    Date tt  = new Date() ;
 }
