@@ -10,6 +10,6 @@ import java.util.List;
 public class TestController {
     @GetMapping("/hello")
     public List<String> hello(){
-        return List.of("hello", "world");
+        return List.of("hello", "world", "!");
     }
 }
